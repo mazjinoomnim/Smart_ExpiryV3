@@ -36,39 +36,86 @@ function loadQrLibrary(){
  return qrLibraryPromise;
 }
 function qrProduct(text){
- try{
-  const url=new URL(text.trim());
-  const isOurs=url.origin===location.origin && url.pathname.replace(/\/+$/,'')===location.pathname.replace(/\/+$/,'');
-  const id=(url.searchParams.get('product')||'').toLowerCase().trim();
-  return isOurs && catalog[id]?id:null;
- }catch{return null}
+ const raw=String(text||'').trim();
+ const normalized=raw.toLowerCase();
+ if(Object.prototype.hasOwnProperty.call(catalog,normalized))return normalized;
+ // Decode known product IDs from the QR content, not the exact QR URL version.
+ // Never follow or navigate to the scanned URL; only use an allowlisted ID.
+ try {
+  const url=new URL(raw,location.href);
+  const params=[url.searchParams.get('product'),url.searchParams.get('id'),url.searchParams.get('item')];
+  for(const value of params){const id=(value||'').toLowerCase().trim();if(Object.prototype.hasOwnProperty.call(catalog,id))return id}
+  // Support older QR URLs whose product query was nested in an encoded redirect.
+  for(const key of ['url','link','target','redirect']){
+   const nested=url.searchParams.get(key);
+   if(nested && nested!==raw){const match=nested.match(/[?&](?:product|id|item)=([a-z]+)/i);if(match && catalog[match[1].toLowerCase()])return match[1].toLowerCase()}
+  }
+ }catch{}
+ const match=raw.match(/[?&](?:product|id|item)=([a-z]+)/i);
+ return match && Object.prototype.hasOwnProperty.call(catalog,match[1].toLowerCase())?match[1].toLowerCase():null;
 }
+function qrUnrecognized(decoded){
+ $('scanStatus').textContent='QR detected, but no supported product ID was found. Scanned text: '+String(decoded).slice(0,240)+' — Choose a product below if this is an older QR.';
+ $('manualProducts').hidden=false;
+}
+
+let scannerSession=0;
 async function closeScanner(){
+ scannerSession++;
  $('scannerOverlay').hidden=true;scannerDone=true;
- if(qrScanner){const scanner=qrScanner;qrScanner=null;try{await scanner.stop()}catch{}try{scanner.clear()}catch{}}
+ const old=qrScanner;qrScanner=null;
+ if(old){try{await old.stop()}catch{}try{old.clear()}catch{}}
  $('qrReader').replaceChildren();scannerBusy=false;
+}
+async function foundQr(decoded,session){
+ if(scannerDone||session!==scannerSession)return;
+ const id=qrProduct(decoded);
+ if(!id){
+  qrUnrecognized(decoded);
+  return;
+ }
+ scannerDone=true;
+ await closeScanner();showDetail(id);
 }
 async function startScanner(){
  if(!user||scannerBusy)return;
- scannerBusy=true;scannerDone=false;$('scannerOverlay').hidden=false;
- $('scanStatus').textContent='Preparing camera…';$('retryScanner').hidden=true;
+ scannerBusy=true;scannerDone=false;
+ const session=++scannerSession;
+ $('scannerOverlay').hidden=false;
+ $('scanStatus').textContent='Preparing camera…';$('retryScanner').hidden=true;$('manualProducts').hidden=true;
  try{
-  if(!window.isSecureContext)throw new Error('Camera requires HTTPS. Open the GitHub Pages website.');
-  const Scanner=await loadQrLibrary();if(scannerDone)return;
-  qrScanner=new Scanner('qrReader');
-  await qrScanner.start({facingMode:'environment'},{fps:10,qrbox:(w,h)=>{const n=Math.min(250,w-20,h-20);return {width:Math.max(100,n),height:Math.max(100,n)}}},async decoded=>{
-   if(scannerDone)return;
-   const id=qrProduct(decoded);
-   if(!id){$('scanStatus').textContent='This is not a recognized SmartExpiry product QR code. Try another code.';return}
-   scannerDone=true;await closeScanner();showDetail(id);
-  },()=>{});
-  if(!scannerDone)$('scanStatus').textContent='Align the QR code inside the camera frame.';
- }catch(e){$('scanStatus').textContent='Cannot open camera: '+(e?.message||e)+' You can still scan using your phone camera.';$('retryScanner').hidden=false;if(qrScanner){try{await qrScanner.stop()}catch{}qrScanner=null}}
- finally{scannerBusy=false}
+  if(!window.isSecureContext)throw new Error('Camera requires HTTPS.');
+  const Scanner=await loadQrLibrary();if(scannerDone||session!==scannerSession)return;
+  // Full video area is decoded (no restrictive qrbox); helps iPhone Safari.
+  qrScanner=new Scanner('qrReader',{verbose:false});
+  await qrScanner.start({facingMode:'environment'}, {fps:12,aspectRatio:1.333334,disableFlip:false},
+    decoded=>{void foundQr(decoded,session)}, ()=>{});
+  if(!scannerDone && session===scannerSession)$('scanStatus').textContent='Hold the QR code steady in the middle of the camera. Move closer or farther if needed.';
+ }catch(e){
+  if(session===scannerSession){$('scanStatus').textContent='Camera scanner error: '+(e?.message||e)+'. You can also choose a QR photo below.';$('retryScanner').hidden=false}
+  if(qrScanner){try{await qrScanner.stop()}catch{}qrScanner=null}
+ }finally{scannerBusy=false}
 }
 $('scanBtn').onclick=startScanner;
 $('closeScanner').onclick=closeScanner;
 $('retryScanner').onclick=startScanner;
+$('manualProducts').addEventListener('click',e=>{const button=e.target.closest('[data-manual-product]');if(button && catalog[button.dataset.manualProduct]){void closeScanner();showDetail(button.dataset.manualProduct)}});
+$('qrFile').addEventListener('change',async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ $('scanStatus').textContent='Reading QR from photo…';
+ try{
+  const Scanner=await loadQrLibrary();
+  // Camera and photo scanning cannot run simultaneously on one Html5Qrcode instance.
+  const wasOpen=!$('scannerOverlay').hidden;
+  await closeScanner();$('scannerOverlay').hidden=!wasOpen;
+  const reader=new Scanner('qrReader');qrScanner=reader;
+  const decoded=await reader.scanFile(file,true);
+  const id=qrProduct(decoded);
+  if(!id){qrUnrecognized(decoded);return}
+  await closeScanner();showDetail(id);
+ }catch(err){$('scanStatus').textContent='Could not read QR photo: '+(err?.message||err)}
+ finally{e.target.value=''}
+});
 
 $('loginBtn').onclick=async()=>{if(!configured){notice('First configure firebase-config.js with your Firebase Web app settings.');return}try{await signInWithPopup(auth,new GoogleAuthProvider())}catch(e){notice('Google sign-in failed: '+e.message)}};
 $('logoutBtn').onclick=async()=>{try{await signOut(auth)}catch(e){notice(e.message)}};

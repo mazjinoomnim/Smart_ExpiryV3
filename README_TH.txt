@@ -1,11 +1,5 @@
-SmartExpiry Mobile Scanner v4
-
-1. Upload index.html, app.js, style.css, firebase-config.js to root of GitHub Pages repository.
-2. Keep Firebase Google Authentication and Firestore rules configured.
-3. Open My Products on phone, tap fixed bottom Scan QR Code, grant camera permission.
-4. Scan one of the included QR_Codes or your existing SmartExpiry product QR codes.
-5. Product Details opens, but item is NOT saved until Add to My Products is tapped.
-6. Camera requires HTTPS and an internet connection to load the html5-qrcode library.
-7. On iPhone/Android, open in Safari/Chrome if an in-app browser blocks camera.
-
-The QR scanner accepts only product links from the same GitHub Pages app origin/path.
+SmartExpiry Scanner Fix v7
+อัปโหลด index.html, app.js, style.css, firebase-config.js ทับไฟล์เดิมใน GitHub Pages
+ปรับตัวอ่าน QR ให้ดึง product ID จากลิงก์ทุกเวอร์ชัน โดยไม่เปิดลิงก์ภายนอก
+หาก QR ไม่มี product ID จะแสดงข้อความที่อ่านได้และปุ่มเลือกสินค้าเป็นทางเลือก
+ห้ามลบ Firebase project หรือ Firestore rules เดิม
