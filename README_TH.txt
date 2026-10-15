@@ -1,9 +1,8 @@
-SmartExpiry V8 - Google Account Chooser
-
-แก้ไข Google Login ให้แสดงหน้าเลือกบัญชีทุกครั้งที่กด Continue with Google โดยใช้ prompt=select_account
-
-อัปโหลด index.html และ app.js ทับไฟล์เดิมใน GitHub repository Smart_ExpiryV3 (main/root)
-ไฟล์อื่นไม่จำเป็นต้องเปลี่ยน Firebase configuration ไม่ต้องเปลี่ยน QR Code
-
-ทดสอบ: Sign out > Continue with Google > เลือกบัญชี > ตรวจสอบ My Products
-หมายเหตุ: Google อาจแสดงหน้าต่างเลือกบัญชีต่างกันตาม Safari/Chrome และการตั้งค่าคุกกี้
+SmartExpiry v9: แก้วันหมดอายุและนับถอยหลัง
+1. อัปโหลด index.html, app.js, style.css ไปที่ GitHub repo Smart_ExpiryV3 (root)
+2. ใช้ firebase-config.js เดิมที่ทำงานได้ ไม่ต้องเปลี่ยนค่า Firebase
+3. เปิด QR เดิมได้เลย ไม่ต้องสร้างใหม่
+4. ใน Product Details ให้กรอกวันหมดอายุจริงตามฉลาก แล้วกด Add to My Products หรือ Save Updated Dates
+5. สินค้าเดิมที่เคยเพิ่ม: เปิดแต่ละสินค้า ตรวจและแก้วันหมดอายุที่เคยเป็นข้อมูลตัวอย่าง แล้วกด Save Updated Dates
+6. วันนับถอยหลังคำนวณจากวันปัจจุบันตามเขตเวลาของโทรศัพท์ ไม่ใช่วันที่ผลิต
+7. ระบบยังบันทึกสินค้าแต่ละชนิดได้หนึ่งรายการต่อบัญชีเท่านั้น
