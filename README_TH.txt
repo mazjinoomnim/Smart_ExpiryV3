@@ -1,8 +1,5 @@
-SmartExpiry v9: แก้วันหมดอายุและนับถอยหลัง
-1. อัปโหลด index.html, app.js, style.css ไปที่ GitHub repo Smart_ExpiryV3 (root)
-2. ใช้ firebase-config.js เดิมที่ทำงานได้ ไม่ต้องเปลี่ยนค่า Firebase
-3. เปิด QR เดิมได้เลย ไม่ต้องสร้างใหม่
-4. ใน Product Details ให้กรอกวันหมดอายุจริงตามฉลาก แล้วกด Add to My Products หรือ Save Updated Dates
-5. สินค้าเดิมที่เคยเพิ่ม: เปิดแต่ละสินค้า ตรวจและแก้วันหมดอายุที่เคยเป็นข้อมูลตัวอย่าง แล้วกด Save Updated Dates
-6. วันนับถอยหลังคำนวณจากวันปัจจุบันตามเขตเวลาของโทรศัพท์ ไม่ใช่วันที่ผลิต
-7. ระบบยังบันทึกสินค้าแต่ละชนิดได้หนึ่งรายการต่อบัญชีเท่านั้น
+SmartExpiry V10: Based on user-provided V8.
+Adds read-only Today's Date above countdown; removes no auth, QR, or Firestore functions.
+Countdown refreshes when returning to the page or when the local calendar day changes.
+Upload index.html, app.js, style.css to Smart_ExpiryV3 root. Keep your existing firebase-config.js.
+Existing QR codes contain product ID only; demo catalog dates remain unchanged.

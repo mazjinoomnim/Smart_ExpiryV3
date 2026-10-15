@@ -11,4 +11,7 @@
 
 .manualProducts{padding:12px;background:#f8f1e8;border-radius:14px;margin:12px 0;color:#6b3777}.manualProducts p{margin:0 0 10px;font-size:14px}.manualButtons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.manualButtons button{border:1px solid #e1d3df;border-radius:12px;background:white;color:#63356f;padding:12px 6px;font-size:14px}
 
-.dateEditor{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:10px 0}.dateEditor label{font-size:12px;color:#713a7b;font-weight:700}.dateEditor input{width:100%;max-width:100%;display:block;margin-top:6px;padding:9px 6px;border:1px solid #d8c9d7;border-radius:9px;background:#fff;color:#24212a;font-size:13px}.dateWarning{color:#815a19;background:#fff3d9;border-radius:9px;padding:10px;font-size:12px;line-height:1.5}.pill.unknown{background:#ece8ee;color:#6c5871}
+/* Today's date: reference for expiration countdown (read-only) */
+.todayDate{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 15px;margin:14px 0;background:#f1e6f3;border-radius:15px;color:#713a7b;font-size:14px}
+.todayDate span{font-weight:700}.todayDate strong{font-weight:700;white-space:nowrap}
+@media(max-width:350px){.todayDate{font-size:12px;padding:13px 10px}}
