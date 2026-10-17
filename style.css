@@ -15,3 +15,5 @@
 .todayDate{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:16px 15px;margin:14px 0;background:#f1e6f3;border-radius:15px;color:#713a7b;font-size:14px}
 .todayDate span{font-weight:700}.todayDate strong{font-weight:700;white-space:nowrap}
 @media(max-width:350px){.todayDate{font-size:12px;padding:13px 10px}}
+
+.pairPanel{margin:16px 0;padding:16px;border:1px solid #cde2d4;border-radius:18px;background:#f5faf6}.pairPanel h2{margin:0 0 8px;font-size:1.1rem}.pairPanel p{font-size:.9rem}.pairRow{display:flex;gap:8px;flex-wrap:wrap}.pairRow input{flex:1;min-width:130px;padding:12px;border:1px solid #a4bdae;border-radius:10px;font:inherit;text-transform:uppercase}.pairRow button{padding:12px 16px;border:0;border-radius:10px;background:#225f47;color:white;font:inherit;cursor:pointer}

@@ -3,7 +3,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/fireba
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 import { firebaseConfig } from './firebase-config.js';
-const catalog={coffee:{id:'coffee',name:'Coffee',emoji:'☕',category:'Beverage · Follow label storage instructions',mfg:'2026-10-15',exp:'2026-10-22'},yogurt:{id:'yogurt',name:'Yogurt',emoji:'🍓',category:'Dairy · Keep chilled',mfg:'2026-09-20',exp:'2026-10-11'},bread:{id:'bread',name:'Bread',emoji:'🍞',category:'Bakery · Store in a cool place',mfg:'2026-10-10',exp:'2026-10-16'},milk:{id:'milk',name:'Fresh Milk',emoji:'🥛',category:'Dairy · Keep chilled',mfg:'2026-09-25',exp:'2026-10-25'},burger:{id:'burger',name:'Hamburger',emoji:'🍔',category:'Prepared food · Keep chilled',mfg:'2026-10-14',exp:'2026-10-16'},broccoli:{id:'broccoli',name:'Broccoli',emoji:'🥦',category:'Vegetable · Keep chilled',mfg:'2026-10-14',exp:'2026-10-20'},beef:{id:'beef',name:'Beef',emoji:'🥩',category:'Raw meat · Keep refrigerated',mfg:'2026-10-14',exp:'2026-10-17'},sausage:{id:'sausage',name:'Sausage',emoji:'🌭',category:'Processed meat · Keep refrigerated',mfg:'2026-10-14',exp:'2026-10-22'},eggs:{id:'eggs',name:'Fresh Eggs',emoji:'🥚',category:'Eggs · Keep refrigerated',mfg:'2026-10-10',exp:'2026-10-24'}};
+const catalog={cookie:{id:'cookie',name:'Cookie',emoji:'🍪',category:'Bakery · Store in a cool, dry place',mfg:'2026-10-15',exp:'2026-10-17'},coffee:{id:'coffee',name:'Coffee',emoji:'☕',category:'Beverage · Follow label storage instructions',mfg:'2026-10-15',exp:'2026-10-22'},yogurt:{id:'yogurt',name:'Yogurt',emoji:'🍓',category:'Dairy · Keep chilled',mfg:'2026-09-20',exp:'2026-10-11'},bread:{id:'bread',name:'Bread',emoji:'🍞',category:'Bakery · Store in a cool place',mfg:'2026-10-10',exp:'2026-10-16'},milk:{id:'milk',name:'Fresh Milk',emoji:'🥛',category:'Dairy · Keep chilled',mfg:'2026-09-25',exp:'2026-10-25'},burger:{id:'burger',name:'Hamburger',emoji:'🍔',category:'Prepared food · Keep chilled',mfg:'2026-10-14',exp:'2026-10-16'},broccoli:{id:'broccoli',name:'Broccoli',emoji:'🥦',category:'Vegetable · Keep chilled',mfg:'2026-10-14',exp:'2026-10-20'},beef:{id:'beef',name:'Beef',emoji:'🥩',category:'Raw meat · Keep refrigerated',mfg:'2026-10-14',exp:'2026-10-17'},sausage:{id:'sausage',name:'Sausage',emoji:'🌭',category:'Processed meat · Keep refrigerated',mfg:'2026-10-14',exp:'2026-10-22'},eggs:{id:'eggs',name:'Fresh Eggs',emoji:'🥚',category:'Eggs · Keep refrigerated',mfg:'2026-10-10',exp:'2026-10-24'}};
 const $=id=>document.getElementById(id);
 const configured=!!(firebaseConfig.apiKey && firebaseConfig.projectId && firebaseConfig.appId);
 let auth,db,user=null,unsubscribe=null,tracked=[],filter='all',current=null;
@@ -139,9 +139,7 @@ async function deviceRequest(path,method='GET',body){
  const result=await response.json();if(!response.ok)throw new Error(result.error||'Request failed');return result;
 }
 async function loadDevices(){
- if(!user)return;
- if(!DEVICE_API_URL){$('pairStatus').textContent='Worker URL missing: check device-config.js';return;}
- $('pairStatus').textContent='Connecting to device service...';
+ if(!user||!DEVICE_API_URL)return;
  try{const result=await deviceRequest('/my-devices');pairedDevices=result.devices||[];
  $('deviceList').textContent=pairedDevices.length?'Paired: '+pairedDevices.join(', '):'No devices paired yet.';
  $('pairStatus').textContent='Enter the code from M5 to pair.';
